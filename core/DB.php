@@ -110,7 +110,7 @@ class DB
 	 * @param $params
 	 * @return bool
 	 */
-	public function update(int $id, $params): bool
+	public function update(int $id, array $params): bool
 	{
 		$updateFieldsString = '';
 		foreach (array_keys($params) as $field) {
