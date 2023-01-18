@@ -24,6 +24,10 @@ class DB
 	{
 		try {
 			$this->pdo = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8', DB_USERNAME, DB_PASSWORD);
+
+			if (!DEBUG) {
+				$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+			}
 		} catch (PDOException $exception) {
 			DEBUG ? die($exception->getMessage()) : Router::route(['error', 'databaseConnectionFailed']);
 		}
@@ -53,33 +57,59 @@ class DB
 	{
 		$this->error = false;
 
-		if ($limit !== null) {
-			$sql .= " LIMIT = $limit";
-		}
-
-		if ($offset !== null) {
-			$sql .= " OFFSET = $offset";
-		}
-
 		if ($orderBy !== null) {
 			$sql .= " ORDER BY = $orderBy";
 		}
 
-		if ($this->query = $this->pdo->prepare($sql)) {
-			if (count($params) > 0) {
-				foreach ($params as $key => $param) {
-					$this->query->bindParam($key, $param);
-				}
-			}
+		if ($limit !== null) {
+			$sql .= " LIMIT $limit";
 		}
 
-		if ($this->query->execute()) {
+		if ($offset !== null) {
+			$sql .= " OFFSET $offset";
+		}
+
+		$this->query = $this->pdo->prepare($sql);
+		if ($this->query->execute($params)) {
 			$this->results = $this->query->fetchAll(PDO::FETCH_OBJ);
 			$this->count = $this->query->rowCount();
 			$this->lastInsertId = $this->pdo->lastInsertId();
 		} else {
 			$this->error = true;
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param array $fields
+	 * @param array $conditions
+	 * @param int|null $limit
+	 * @param int|null $offset
+	 * @param string|null $orderBy
+	 * @return $this
+	 */
+	public function select(array $fields, array $conditions = [], ?int $limit = null, ?int $offset = null, ?string $orderBy = null): DB
+	{
+		$conditionsString = '';
+		$fieldsString = '';
+
+		foreach ($fields as $field) {
+			$fieldsString .= $field . ', ';
+		}
+		$fieldsString = rtrim($fieldsString, ', ');
+
+		if (!empty($conditions)) {
+			$conditionsString .= 'WHERE';
+			foreach ($conditions as $field => $bind) {
+				$conditionsString .= ' ' . $field . ' = :' . $field . ' AND';
+			}
+		}
+
+		$conditionsString = rtrim($conditionsString, ' AND');
+
+		$sql = "SELECT $fieldsString FROM $this->table $conditionsString";
+		$this->query(sql: $sql, params: $conditions, limit: $limit, offset: $offset, orderBy: $orderBy);
 
 		return $this;
 	}
@@ -114,8 +144,10 @@ class DB
 	{
 		$updateFieldsString = '';
 		foreach (array_keys($params) as $field) {
-			$updateFieldsString .= "`$field` = :$field ";
+			$updateFieldsString .= "`$field` = :$field, ";
 		}
+
+		$updateFieldsString = rtrim($updateFieldsString, ', ');
 
 		$params['id'] = $id;
 		$sql = "UPDATE $this->table SET $updateFieldsString WHERE id = :id";
@@ -131,9 +163,12 @@ class DB
 	{
 		$params = ['id' => $id];
 		if (SOFT_DELETE && $this->isSoftDeletable()) {
+			$dateTime = new DateTime();
+			$dateTimeFormatted = $dateTime->format('Y-m-d H:i:s');
+
 			$deletedAtColumName = DBConstants::DB_DELETED_AT_COLUMN_NAME;
 			$sql = "UPDATE $this->table SET $deletedAtColumName = :dateTime WHERE id = :id";
-			$params['dateTime'] = new DateTime();
+			$params['dateTime'] = $dateTimeFormatted;
 		} else {
 			$sql = "DELETE FROM $this->table WHERE id = :id";
 		}
@@ -189,7 +224,7 @@ class DB
 	 */
 	public function getColumns(): array
 	{
-		return $this->query("SHOW COLUMNS FOR $this->table")->results();
+		return $this->query("SHOW COLUMNS FROM $this->table")->results();
 	}
 
 	/**
@@ -222,7 +257,7 @@ class DB
 		$columns = $this->getColumns();
 
 		foreach ($columns as $column) {
-			if ($columns->Field === DBConstants::DB_DELETED_AT_COLUMN_NAME) {
+			if ($column->Field === DBConstants::DB_DELETED_AT_COLUMN_NAME) {
 				return true;
 			}
 		}
