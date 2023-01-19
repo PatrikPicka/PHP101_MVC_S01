@@ -9,7 +9,7 @@ use Core\Router;
 use Couchbase\PathNotFoundException;
 use DateTime;
 
-abstract class ModelSuperclass
+abstract class BaseModel
 {
 	protected DB $db;
 	protected string $table;

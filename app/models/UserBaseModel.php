@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Core\Superclasses\ModelSuperclass;
+use Core\Superclasses\BaseModel;
 use DateTime;
 
-class UserModel extends ModelSuperclass
+class UserBaseModel extends BaseModel
 {
 	public string $username;
 	public string $email;
