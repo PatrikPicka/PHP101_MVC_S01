@@ -35,12 +35,33 @@ class View
 	}
 
 	/**
+	 * @param string $template
+	 * @return void
+	 * @throws PathNotFoundException
+	 */
+	public function includeTemplate(string $template): void
+	{
+		$templateParts = explode('/', $template);
+		$templatePath = implode(DS, $templateParts);
+
+		if (file_exists(ROOT . DS . 'templates' . DS . $templatePath . '.php')) {
+			include ROOT . DS . 'templates' . DS . $templatePath . '.php';
+		} else {
+			DEBUG ? die('The view ' . $templatePath . ' does not exists.') : Router::route(['error', 'internalServerError']);
+		}
+	}
+
+	/**
 	 * @param string $name
 	 * @return string
 	 */
-	public function block(string $name): string
+	public function block(string $name): ?string
 	{
-		return $this->content[$name];
+		if (isset($this->content[$name])) {
+			return $this->content[$name];
+		}
+
+		return null;
 	}
 
 	/**

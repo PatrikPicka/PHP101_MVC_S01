@@ -1,0 +1,12 @@
+guest:
+  denied:
+    Content: ['*']
+    User: ['logout']
+  Home: ['*']
+  Contacts: ['*']
+  User: ['login', 'register']
+user:
+  denied:
+    User: ['login', 'register']
+  User: ['logout']
+  Content: ['*']
