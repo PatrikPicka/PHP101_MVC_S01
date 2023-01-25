@@ -2,6 +2,8 @@
 
 use Couchbase\DocumentNotFoundException;
 
+session_start();
+
 const DS = DIRECTORY_SEPARATOR;
 define('ROOT', dirname(__FILE__));
 

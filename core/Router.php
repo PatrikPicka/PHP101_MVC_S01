@@ -83,6 +83,82 @@ class Router
 	}
 
 	/**
+	 * @return array
+	 */
+	public static function getMenu(): array
+	{
+		$menuItems = yaml_parse_file(ROOT . DS . 'app' . DS . 'menu.yaml');
+		$finalMenuArray = [];
+
+		foreach ($menuItems as $menuItem => $data) {
+			if (array_key_first($data) === 'dropdown') {
+				foreach ($data['dropdown'] as $subMenuItem => $subData) {
+					if ($subMenuItem === 'divider' && !empty($finalMenuArray[$menuItem])) {
+						$finalMenuArray[$menuItem][$subMenuItem] = null;
+					} elseif ($subMenuItem !== 'divider' && ($link = self::getLink(data: $subData)) !== null) {
+						$finalMenuArray[$menuItem][$subMenuItem] = $link;
+					}
+				}
+			} elseif (($link = self::getLink(data: $data)) !== null) {
+				$finalMenuArray[$menuItem] = $link;
+			}
+		}
+
+		return $finalMenuArray;
+	}
+
+	/**
+	 * @param array $data
+	 * @return string|null
+	 */
+	public static function getLink(array $data): ?string
+	{
+		if (isset($data['link'])) {
+			return $data['link'];
+		} else {
+			$controller = strtolower($data['controller']);
+			$action = $data['action'] ?? DEFAULT_ACTION_BASE_NAME;
+
+			if (self::hasAccess(controller: $controller, action: $action)) {
+				if (!empty($data['params'])) {
+					$params = '';
+					foreach ($data['params'] as $param) {
+						$params .= '/' . $param;
+					}
+				}
+
+				return PROOT . $controller . ($action !== DEFAULT_ACTION_BASE_NAME || isset($params) ? '/' . $action : null) . ($params ?? null);
+			}
+
+			return null;
+		}
+	}
+
+	/**
+	 * @param array $params
+	 * @return void
+	 */
+	public static function redirect(array $params): void
+	{
+		$route = self::getLink(data: $params);
+
+		if (!headers_sent()) {
+			header('Location: ' . $route);
+			exit();
+		} else {
+			echo '
+				<script type="text/javascript">
+					window.location.href = ' . $route. '
+				</script>
+				<noscript>
+					<meta http-equiv="refresh" content="0;url=' . $route . '" />
+				</noscript>
+			';
+			exit();
+		}
+	}
+
+	/**
 	 * @return void
 	 */
 	private static function renderDefaultController(): void

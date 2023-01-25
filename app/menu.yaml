@@ -1,0 +1,24 @@
+Home:
+  controller: 'Home'
+  action: 'index'
+Contacts:
+  controller: 'Contacts'
+  action: 'index'
+Content:
+  dropdown:
+    PHP 101:
+      controller: 'Content'
+      action: 'list'
+      params:
+        slug: 'php-101'
+    PHP OOP:
+      controller: 'Content'
+      action: 'list'
+      params:
+        slug: 'php-oop'
+    divider: ''
+    PHP MVC:
+      controller: 'Content'
+      action: 'list'
+      params:
+        slug: 'php-mvc'
