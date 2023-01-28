@@ -37,7 +37,9 @@ class Router
 
 			$dispatch = new $controllerWithNamespace;
 			if (method_exists($dispatch, $action)) {
-				call_user_func([$dispatch, $action], $params);
+				$request = new Request(controller: $controllerName, action: $action, postData:  $_POST, queryData:  $_GET);
+
+				call_user_func([$dispatch, $action], $request, $params);
 			} else {
 				DEBUG ? die('That method does not exists inside this controller: ' . $controllerWithNamespace . '::' . $action) : throw new PathNotFoundException('This path does not exists');
 			}
@@ -168,7 +170,9 @@ class Router
 
 		$dispatch = new $controller();
 		if (method_exists($dispatch, DEFAULT_ACTION)) {
-			call_user_func([$dispatch, DEFAULT_ACTION]);
+			$request = new Request(controller: DEFAULT_CONTROLLER, action: DEFAULT_ACTION, postData:  $_POST, queryData:  $_GET);
+
+			call_user_func([$dispatch, DEFAULT_ACTION], $request);
 		}
 	}
 }
