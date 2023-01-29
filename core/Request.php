@@ -50,10 +50,23 @@ class Request
 	{
 		if (!empty($_POST[$name])) {
 			return $_POST[$name];
-		} elseif ($_GET[$name]) {
+		} elseif (!empty($_GET[$name])) {
 			return $_GET[$name];
 		}
 
 		return null;
+	}
+
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
+	public function isSubmitted(string $name): bool
+	{
+		if (isset($_POST[$name]) || isset($_GET[$name])) {
+			return true;
+		}
+
+		return false;
 	}
 }

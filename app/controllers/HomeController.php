@@ -3,12 +3,13 @@
 namespace App\Controllers;
 
 use Core\Request;
+use Core\Superclasses\BaseController;
 use Core\View;
 
-class HomeController
+class HomeController extends BaseController
 {
 	public function indexAction(Request $request, ?array $params = null)
-	{var_dump($request);
+	{
 		$view = new View();
 		$view->render('pages/home');
 	}

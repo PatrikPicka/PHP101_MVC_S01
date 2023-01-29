@@ -28,6 +28,10 @@ html {
     box-shadow: none !important;
 }
 
+.form-control.invalid {
+    border-color: #dc3545;
+}
+
 /**content**/
 nav.navbar {
     background-color: #171818cc!important;
