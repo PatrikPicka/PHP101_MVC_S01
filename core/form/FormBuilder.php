@@ -57,7 +57,15 @@ class FormBuilder
 	 */
 	public function isSubmitted(): bool
 	{
-		return $this->request->isSubmitted(array_key_first($this->fields));
+		if ($this->request !== null) {
+			return $this->request->isSubmitted(array_key_first($this->fields));
+		} else {
+			if (DEBUG) {
+				die('You must first handle forms request.');
+			}
+
+			return false;
+		}
 	}
 
 	/**
