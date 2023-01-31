@@ -58,4 +58,17 @@ class Session
 
 		return null;
 	}
+
+	/**
+	 * @param string $message
+	 * @param string $type
+	 * @return void
+	 */
+	public static function setAlertMessage(string $message, string $type = ALERT_SUCCESS): void
+	{
+		self::set(name: ALERT_NAME, value: [
+			'type' => $type,
+			'message' => $message,
+		]);
+	}
 }

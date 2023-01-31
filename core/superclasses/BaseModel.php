@@ -26,16 +26,8 @@ abstract class BaseModel
 
 		if ($id !== null) {
 			$this->id = $id;
-			$this->getObject(id: $id);
-
-			foreach ($this->columns as $column) {
-				$columnName = StringHelpers::snakeCaseToCamelCase($column->Field);
-				if ($column->Type === DBConstants::DB_DATE_TIME_COLUMN_TYPE && property_exists($this, $columnName)) {
-					$this->{$columnName} = $this->object->{$column->Field} !== null ? new DateTime($this->object->{$column->Field}) : null;
-				} elseif (property_exists($this, $columnName)) {
-					$this->{$columnName} = $this->object->{$column->Field};
-				}
-			}
+			$this->getObjectByConditions(conditions: ['id' => $id]);
+			$this->setObjectVariables();
 		}
 	}
 
@@ -52,7 +44,7 @@ abstract class BaseModel
 				&& $column->Field !== DBConstants::DB_UPDATED_AT_COLUMN_NAME
 				&& $column->Field !== DBConstants::DB_DELETED_AT_COLUMN_NAME
 			) {
-				$params[StringHelpers::snakeCaseToCamelCase($column->Field)] = $this->{StringHelpers::snakeCaseToCamelCase($column->Field)};
+				$params[$column->Field] = $this->{StringHelpers::snakeCaseToCamelCase($column->Field)};
 			}
 		}
 
@@ -67,7 +59,8 @@ abstract class BaseModel
 		if ($this->object === null && $this->id === null) {
 			$this->db->insert(params: $params);
 			$this->id = $this->db->lastId();
-			$this->getObject($this->id);
+			$this->getObjectByConditions(conditions: ['id' => $this->id]);
+			$this->setObjectVariables();
 		} else {
 			unset($params[DBConstants::DB_CREATED_AT_COLUMN_NAME]);
 			$this->db->update(id: $this->getId(), params: $params);
@@ -112,13 +105,29 @@ abstract class BaseModel
 	 * @return void
 	 * @throws PathNotFoundException
 	 */
-	protected function getObject(int $id): void
+	protected function getObjectByConditions(array $conditions): void
 	{
-		if ($this->db->select(['*'], ['id' => $id], 1)->error()) {
+		if ($this->db->select(['*'], $conditions, 1)->error()) {
 			DEBUG ? die('There was an error while trying to fetch objects data: ' . get_class($this) . ' With id: #' . $id) : Router::route(['error', 'internalServerError']);
 		}
 
 		$this->object = $this->db->getFirstResult();
+	}
+
+	/**
+	 * @return void
+	 * @throws \Exception
+	 */
+	protected function setObjectVariables(): void
+	{
+		foreach ($this->columns as $column) {
+			$columnName = StringHelpers::snakeCaseToCamelCase($column->Field);
+			if ($column->Type === DBConstants::DB_DATE_TIME_COLUMN_TYPE && property_exists($this, $columnName)) {
+				$this->{$columnName} = $this->object->{$column->Field} !== null ? new DateTime($this->object->{$column->Field}) : null;
+			} elseif (property_exists($this, $columnName)) {
+				$this->{$columnName} = $this->object->{$column->Field};
+			}
+		}
 	}
 
 	/**

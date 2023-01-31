@@ -50,7 +50,11 @@ abstract class FormField
 		$asserts = [];
 		if (!empty($params['asserts'])) {
 			foreach ($params['asserts'] as $assert) {
-				$asserts[] = new $assert(fieldName: $name, value: $this->value);
+				if ($assert instanceof BaseAssert) {
+					$asserts[] = $assert;
+				} else {
+					$asserts[] = new $assert(fieldName: $name, value: $this->value);
+				}
 			}
 		}
 		$this->setAsserts(asserts: $asserts);

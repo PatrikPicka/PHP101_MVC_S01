@@ -6,7 +6,7 @@
 		name="<?=$this->getName();?>"
 	>
 		<?php foreach ($this->choices as $choiceText => $choiceValue): ?>
-			<option <?php if ($choiceValue === $this->getValue()): ?>selected<?php endif; ?> value="<?=$choiceValue?>"><?=$choiceText?></option>
+			<option <?php if ($choiceValue == $this->getValue()): ?>selected<?php endif; ?> value="<?=$choiceValue?>"><?=$choiceText?></option>
 		<?php endforeach; ?>
 	</select>
 </div>

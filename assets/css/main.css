@@ -53,6 +53,10 @@ nav.navbar {
     opacity: 1;
 }
 
+nav.navbar .user-actions p {
+    color: var(--primary-hover);
+}
+
 nav.navbar .user-actions a {
     color: var(--off-white);
     transition: var(--base-transition);

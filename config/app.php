@@ -21,3 +21,8 @@ const DB_NAME = 'mvc_01';
 const DB_USERNAME = 'root';
 const DB_PASSWORD = '';
 const SOFT_DELETE = true;
+
+const ALERT_NAME = 'alerts';
+const ALERT_SUCCESS = 'success';
+const ALERT_ERROR = 'danger';
+const ALERT_WARNING = 'warning';

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Core\Superclasses\BaseModel;
+use Couchbase\PathNotFoundException;
 use DateTime;
 
 class User extends BaseModel
@@ -20,6 +21,23 @@ class User extends BaseModel
 	public function __construct(?int $id = null)
 	{
 		parent::__construct(table: self::TABLE, id: $id);
+	}
+
+	/**
+	 * @param string $email
+	 * @return bool
+	 * @throws PathNotFoundException
+	 */
+	public function userLoadedByEmail(string $email): bool
+	{
+		$this->getObjectByConditions(conditions: ['email' => $email]);
+		if ($this->object !== null) {
+			$this->setObjectVariables();
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

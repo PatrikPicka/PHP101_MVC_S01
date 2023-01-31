@@ -2,13 +2,13 @@
 <div class="wrapper d-flex align-items-center" style="height: 100vh;">
 	<div class="container">
 		<div class="card">
-			<h5 class="card-header">Přihlášení</h5>
+			<h5 class="card-header">Registrace</h5>
 			<div class="card-body">
 				<?php $form->render(); ?>
-				<p>Nemáš učet?
+				<p>Máš již účet?
 					<a
-						href="<?= \Core\Router::getLink(['controller' => 'user', 'action' => 'register']); ?>"
-				  		class="btn btn-primary">Registruj se zde.</a>
+						href="<?= \Core\Router::getLink(['controller' => 'user', 'action' => 'login']); ?>"
+				  		class="btn btn-primary">Přihlaš se zde.</a>
 				</p>
 			</div>
 		</div>
