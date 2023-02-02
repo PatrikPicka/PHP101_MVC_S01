@@ -142,4 +142,12 @@ abstract class BaseModel
 
 		return in_array(DBConstants::DB_CREATED_AT_COLUMN_NAME, $columnsArray) && in_array(DBConstants::DB_UPDATED_AT_COLUMN_NAME, $columnsArray);
 	}
+
+	/**
+	 * @param object|null $object
+	 */
+	public function setObject(?object $object): void
+	{
+		$this->object = $object;
+	}
 }

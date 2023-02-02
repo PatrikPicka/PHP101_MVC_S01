@@ -68,6 +68,11 @@ nav.navbar .user-actions a:hover {
     text-decoration: none;
 }
 
+.menu-spacer {
+    width: 100%;
+    height: 80px
+}
+
 .columns-container {
     height: 100vh;
     display: flex;
