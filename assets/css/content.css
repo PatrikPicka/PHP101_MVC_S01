@@ -1,0 +1,23 @@
+.content-list-item {
+    height: 300px;
+}
+
+.content-list-item .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.content-list-item .card-body .card-link {
+    margin: 0 auto;
+    width: 75%;
+}
+
+.content-list-item .card-body .card-link-disabled {
+    background: var(--off-white) !important;
+    cursor: not-allowed;
+}
+
+.content-detail-iframe {
+    width: 100%;
+    height: 650px;
+}

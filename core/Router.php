@@ -37,7 +37,7 @@ class Router
 
 			$dispatch = new $controllerWithNamespace;
 			if (method_exists($dispatch, $action)) {
-				$request = new Request(controller: $controllerName, action: $action, postData:  $_POST, queryData:  $_GET);
+				$request = new Request(controller: $controllerName, action: $action, postData:  $_POST, queryData:  $_GET, method: $_SERVER['REQUEST_METHOD']);
 
 				call_user_func([$dispatch, $action], $request, $params);
 			} else {
@@ -170,7 +170,7 @@ class Router
 
 		$dispatch = new $controller();
 		if (method_exists($dispatch, DEFAULT_ACTION)) {
-			$request = new Request(controller: DEFAULT_CONTROLLER, action: DEFAULT_ACTION, postData:  $_POST, queryData:  $_GET);
+			$request = new Request(controller: DEFAULT_CONTROLLER, action: DEFAULT_ACTION, postData:  $_POST, queryData:  $_GET, method: $_SERVER['REQUEST_METHOD']);
 
 			call_user_func([$dispatch, DEFAULT_ACTION], $request);
 		}

@@ -14,16 +14,28 @@ class Request
 	 */
 	protected string $action;
 
+	/**
+	 * @var array|null
+	 */
 	protected ?array $postData = null;
 
+	/**
+	 * @var array|null
+	 */
 	protected ?array $queryData = null;
 
-	public function __construct(string $controller, string $action, array $postData, array $queryData)
+	/**
+	 * @var string
+	 */
+	protected string $method;
+
+	public function __construct(string $controller, string $action, array $postData, array $queryData, string $method)
 	{
 		$this->controller = $controller;
 		$this->action = $action;
 		$this->postData = $postData;
 		$this->queryData = $queryData;
+		$this->method = $method;
 	}
 
 	/**
@@ -68,5 +80,13 @@ class Request
 		}
 
 		return false;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMethod(): string
+	{
+		return $this->method;
 	}
 }

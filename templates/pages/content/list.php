@@ -1,4 +1,5 @@
-<?php use Core\Router;
+<?php use Core\Helpers\StringHelpers;
+use Core\Router;
 
 $this->start('css'); ?>
 <link rel="stylesheet" href="<?=PROOT?>assets/css/content.css">
@@ -13,19 +14,28 @@ $this->start('css'); ?>
 	<hr>
 	<div class="category-description">
 		<p>
-			<?=$category->description?>
+					<?=$category->description?>
 		</p>
 	</div>
-	<div class="row mt-5">
-		<?php foreach ($contents as $video): ?>
-			<div class="card col-sm-6 col-md-4 col-xl-3">
-				<div class="card-body">
-					<h5 class="card-title"><?=$video->title?></h5>
-					<p class="card-text"><?=$video->description?></p>
-					<a href="<?=Router::getLink(data: ['controller' => 'content', 'action' => 'detail', 'params' => [$video->getId()]])?>" class="card-link">Play</a>
-				</div>
-			</div>
-		<?php endforeach; ?>
+	<div class="row mt-5 content-list-wrapper">
+			<?php foreach ($contents as $video): ?>
+		  <div class="card col-sm-6 col-md-4 col-xl-3 content-list-item">
+			  <div class="card-body">
+				  <h5 class="card-title"><?= StringHelpers::getShortenedStringWhenIsLongerThanNeeded($video->title, 50)?></h5>
+				  <p class="card-text"><?=StringHelpers::getShortenedStringWhenIsLongerThanNeeded($video->description, 125)?></p>
+				  <a
+						  href="
+									<?php if ($user->hasAccessToContent(content: $video)): ?>
+										<?=Router::getLink(data: ['controller' => 'content', 'action' => 'detail', 'params' => [$video->getId()]])?>
+									<?php else: ?>
+										#
+									<?php endif; ?>
+								"
+						  class="btn btn-primary btn-small card-link <?php if (!$user->hasAccessToContent(content: $video)): ?>card-link-disabled<?php endif;?>"
+				  >Play</a>
+			  </div>
+		  </div>
+			<?php endforeach; ?>
 	</div>
 </div>
 <?php $this->end(); ?>
